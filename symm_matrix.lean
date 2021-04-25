@@ -10,6 +10,7 @@ import data.fintype.basic
 import data.real.basic
 import linear_algebra.matrix
 import algebra.star.basic
+import algebra.star.pi
 
 /-!
 # Symmetric Matrices
@@ -48,35 +49,11 @@ is also an eigenvector of M with the same eigenvalue μ.
 -/
 
 open_locale matrix big_operators
-open fintype finset matrix complex module
+open fintype finset matrix complex
 
 universes u
 variables {α : Type u}
 variables {m n : Type*} [fintype m] [fintype n]
-
-section comm_semiring
-
-variables [comm_semiring α]
-
-lemma mul_vec_transpose (A : matrix m n α) (x : m → α) :
-  mul_vec Aᵀ x = vec_mul x A :=
-by { ext, apply dot_product_comm }
-
-lemma vec_mul_transpose (A : matrix m n α) (x : n → α) :
-  vec_mul x Aᵀ = mul_vec A x :=
-by { ext, apply dot_product_comm }
-
-end comm_semiring
-
-section semiring
-
-variables [semiring α]
-
-lemma mul_vec_add (A : matrix m n α) (x y : n → α) :
-  A.mul_vec (x + y) = A.mul_vec x + A.mul_vec y :=
-by { ext, apply dot_product_add }
-
-end semiring
 
 lemma vec_eq_unfold (x y : n → α) : (λ i : n, x i) = (λ i : n, y i) ↔ ∀ i : n, x i = y i :=
 begin
@@ -106,18 +83,6 @@ def vec_im (x : n → ℂ) : n → ℝ := λ i : n, (x i).im
 section vec_conj
 
 def vec_conj (x : n → ℂ) : n → ℂ := λ i : n, conj (x i)
-
-instance star_test : has_star (n → ℂ) :=
-{ star := λ x : n → ℂ, λ i : n, conj (x i) }
-
-instance involutive_test : has_involutive_star (n → ℂ) :=
-{ star_involutive := by simp only [has_star.star, function.involutive, conj_conj, forall_const, eq_self_iff_true] }
-
-noncomputable instance monoid_test : star_monoid (n → ℂ) :=
-{ star_mul := λ r s : n → ℂ, by { ext; simp only [has_star.star, mul_comm, pi.mul_apply, ring_hom.map_mul] } }
-
-noncomputable instance ring_test : star_ring (n → ℂ) :=
-{ star_add := λ r s : n → ℂ, by { ext; simp only [has_star.star, pi.add_apply, add_re, conj_re, ring_hom.map_add] } }
 
 -- (μ • x)* = μ* • x*
 lemma vec_conj_smul (μ : ℂ) (x : n → ℂ) :
