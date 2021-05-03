@@ -9,8 +9,6 @@ import data.complex.module
 import data.fintype.basic
 import data.real.basic
 import linear_algebra.matrix
-import algebra.star.basic
-import algebra.star.pi
 
 /-!
 # Symmetric Matrices
@@ -35,7 +33,7 @@ TODO : make the eigen-definitions consistent with the ones already defined in li
 
 ## Main statements
 
-1. If x is an eigenvector of matrix M, then a • x is an eigenvector of M, for any non-zero a : ℂ
+1. If x is an eigenvector of matrix M, then a • x is an eigenvector of M, for any non-zero a : ℂ.
 2. If there are two eigenvectors of M that have the same correspoding eigenvalue, then any linear combination of them
 is also an eigenvector of M with the same eigenvalue μ.
 3. All eigenvalues of a symmetric real matrix M are real.
@@ -130,14 +128,12 @@ begin
   rw [vec_add_conj_eq_two_re, smul_eq_zero] at H,
   cases H with H_20 H_x,
   { exfalso, simp at H_20, assumption }, -- 2 = 0
-  {
-    rw function.funext_iff at H_x,
+  { rw function.funext_iff at H_x,
     ext i,
     specialize H_x i,
     rw coe_vec_re at H_x,
     simp only [of_real_eq_zero, pi.zero_apply] at H_x,
-    simp only [vec_re, H_x, pi.zero_apply]
-  }
+    simp only [vec_re, H_x, pi.zero_apply] }
 end
 
 end vec_conj
@@ -287,51 +283,46 @@ begin
   { apply M.symm_matrix_real_eigenvalues H_symm μ H_eigenvalue },
   rcases H_eigenvalue with ⟨x, ⟨H_nx, H_mul⟩⟩,
   by_cases H_re : vec_re x = 0,
-  { -- 1) I • x  will be used
-    use (I • x),
+  -- 1) I • x will be used
+  { use (I • x),
     split,
-    { -- 1.1) I • x is an eigenvector
-      split,
-      { -- I • x ≠ 0
-        intro hyp, rw smul_eq_zero at hyp,
+    -- 1.1) I • x is an eigenvector
+    { split,
+      -- 1.1.1) I • x ≠ 0
+      { intro hyp, rw smul_eq_zero at hyp,
         have H_nI : I ≠ 0, { exact I_ne_zero },
-        tauto
-      },
-      -- M (I • x) = μ • (I • x)
-      { simp only [mul_vec_smul_assoc, H_mul, smul_smul, mul_comm] }
-    },
-    { -- I • x ∈ ℝⁿ
-      ext i,
+        tauto },
+      -- 1.1.2) M (I • x) = μ • (I • x)
+      { simp only [mul_vec_smul_assoc, H_mul, smul_smul, mul_comm] } },
+    -- 1.2) I • x ∈ ℝⁿ
+    { ext i,
       simp only [vec_re, vec_eq_unfold] at H_re,
       simp only [vec_im, algebra.id.smul_eq_mul, I_re, one_mul,
                  I_im, zero_mul, mul_im, zero_add, pi.smul_apply],
-      exact H_re i
-    }
-  },
-  { -- 2) x + x* will be used
-    use (x + vec_conj x),
+      exact H_re i } },
+  -- 2) x + x* will be used
+  { use (x + vec_conj x),
     split,
-    { -- 2.1) x + x* is an eigenvector
-      split,
-      -- x + x* ≠ 0
+    -- 2.1) x + x* is an eigenvector
+    { split,
+      -- 2.1.1) x + x* ≠ 0
       { intro hyp, exact H_re (vec_conj_add_zero hyp) },
-      calc M.Coe.mul_vec (x + vec_conj x)
-          = M.Coe.mul_vec x + M.Coe.mul_vec (vec_conj x) :
-      by { apply mul_vec_add } -- M (x + x*) = M x + M x*
-      ... = M.Coe.mul_vec x + vec_conj (M.Coe.mul_vec x) :
-      by { rw ← M.vec_conj_mul_vec_re x }     -- ... = M x + (M x)*
-      ... = μ • x + vec_conj (μ • x) :
-      by { rw H_mul }                         -- ... = μ • x + (μ • x)*
-      ... = μ • x + (conj μ) • (vec_conj x) :
-      by { rw vec_conj_smul }                 -- ... = μ • x + μ* • x*
-      ... = μ • x + μ • (vec_conj x) :
-      by { rw conj_of_zero_im H_μ }           -- ... = μ • x + μ • x*
-      ... = μ • (x + vec_conj x) :
-      by { simp only [smul_add] }             -- ... = μ • (x + x*)
-    },
-     -- 2.2) x + x* ∈ ℝⁿ
-    { ext, simp [vec_add_conj_eq_two_re, vec_im, coe_vec_re] }
-  }
+      -- 2.1.2) M (x + x*) = μ • (x + x*)
+      { calc M.Coe.mul_vec (x + vec_conj x)
+            = M.Coe.mul_vec x + M.Coe.mul_vec (vec_conj x) :
+        by { apply mul_vec_add } -- M (x + x*) = M x + M x*
+        ... = M.Coe.mul_vec x + vec_conj (M.Coe.mul_vec x) :
+        by { rw ← M.vec_conj_mul_vec_re x }     -- ... = M x + (M x)*
+        ... = μ • x + vec_conj (μ • x) :
+        by { rw H_mul }                         -- ... = μ • x + (μ • x)*
+        ... = μ • x + (conj μ) • (vec_conj x) :
+        by { rw vec_conj_smul }                 -- ... = μ • x + μ* • x*
+        ... = μ • x + μ • (vec_conj x) :
+        by { rw conj_of_zero_im H_μ }           -- ... = μ • x + μ • x*
+        ... = μ • (x + vec_conj x) :
+        by { simp only [smul_add] } } },        -- ... = μ • (x + x*)
+    -- 2.2) x + x* ∈ ℝⁿ
+    { ext, simp [vec_add_conj_eq_two_re, vec_im, coe_vec_re] } }
 end
 
 -- 5. If v and w are eigenvectors of a symmetric matrix M with different eigenvalues, then v and w are orthogonal.
