@@ -7,7 +7,7 @@ Author: Gabriel Moise.
 import algebra.big_operators.basic
 import combinatorics.simple_graph.basic
 import data.fintype.basic
-import data.sym2
+import data.sym.sym2
 import linear_algebra.matrix
 
 /-!

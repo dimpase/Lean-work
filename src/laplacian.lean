@@ -8,7 +8,7 @@ import algebra.big_operators.basic
 import combinatorics.simple_graph.adj_matrix
 import combinatorics.simple_graph.basic
 import linear_algebra.matrix
-import project.incidence
+import incidence
 
 /-!
 # Laplacian matrices
