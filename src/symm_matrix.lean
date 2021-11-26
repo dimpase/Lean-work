@@ -9,6 +9,8 @@ import data.complex.module
 import data.fintype.basic
 import data.real.basic
 import linear_algebra.matrix
+localized "notation `conj` := star_ring_aut" in complex_conjugate
+
 
 /-!
 # Symmetric Matrices
